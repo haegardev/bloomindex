@@ -219,6 +219,46 @@ int load_file(blind_t* blind, char* filename)
     return 1;
 }
 
+//Returns 1 if the ngram was found
+//Returns 0 otherwise
+int validate_fp(char* filename, uint32_t ngram)
+{
+    int fd;
+    uint8_t* content;
+    struct stat st;
+    uint64_t i;
+    uint32_t* x;
+    int ret = 0;
+
+    if (stat(filename,&st) != -1) {
+        if (S_ISREG(st.st_mode)){
+            fd = open(filename, O_RDONLY);
+            if (fd != -1) {
+                content = mmap(NULL,st.st_size, PROT_READ, MAP_PRIVATE,fd,0);
+                if (content == MAP_FAILED) {
+                    fprintf(stderr, "[ERROR] Cannot read filename %s. Cause=%s\n",
+                            filename, strerror(errno));
+                    close(fd);
+                    ret = 1;
+                }
+
+                //TODO test with process_ngrams by iterating in 4 byte blocks
+                for (i=0; i<st.st_size; i++) {
+                    x = (uint32_t*)(content+i);
+                    if (*x == ngram) {
+                        ret = 1;
+                        break;
+                    }
+                }
+                munmap(content, st.st_size);
+                close(fd);
+            }
+        }
+    }
+    return ret;
+}
+
+
 void process_ngrams(blind_t* blind, uint8_t* buff, size_t sz)
 {
     uint32_t *ngram;
