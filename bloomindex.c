@@ -531,8 +531,13 @@ uint8_t query_index(blind_t *blind, uint32_t ngram)
         DBG("%08x|%08x|%08x|%08x\n", ngram, hmh, hcrc, hrw);
         un = hmh && hcrc && hrw;
         if (un > 0) {
-            printf("ngram %04x found in filename %s\n", ngram,
+            if (validate_fp(blind->toc[i].filename, ngram)) {
+                printf("ngram %04x found in filename %s\n", ngram,
                                                        blind->toc[i].filename);
+            }else{
+                printf("False positive for ngram %04x for filename %s\n", ngram,
+                       blind->toc[i].filename);
+            }
         }
     }
     return 0;
