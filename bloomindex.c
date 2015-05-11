@@ -241,9 +241,8 @@ int validate_fp(char* filename, uint32_t ngram)
                     close(fd);
                     ret = 1;
                 }
-
-                //TODO test with process_ngrams by iterating in 4 byte blocks
-                for (i=0; i<st.st_size; i++) {
+                //FIXME Handle trailing bytes that do not fit in an ngram
+                for (i=0; i<st.st_size; i+=sizeof(uint32_t)) {
                     x = (uint32_t*)(content+i);
                     if (*x == ngram) {
                         ret = 1;
@@ -278,7 +277,7 @@ void process_ngrams(blind_t* blind, uint8_t* buff, size_t sz)
     #ifdef DATA_DEBUG
     DBG("Ngram|Murmur Hash|Norm MH|CRC|Norm CRC|Norm ngram|Size\n");
     #endif
-    for (i=0; i <sz;i++) {
+    for (i=0; i<sz; i+=sizeof(uint32_t)) {
         //FIXME Handle the last 3,2,1 grams
         if (i < sz - sizeof(uint32_t)){
             ngram = (uint32_t*)(buff+i);
