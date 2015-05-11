@@ -229,7 +229,6 @@ int validate_fp(char* filename, uint32_t ngram)
     uint64_t i;
     uint32_t* x;
     int ret = 0;
-
     if (stat(filename,&st) != -1) {
         if (S_ISREG(st.st_mode)){
             fd = open(filename, O_RDONLY);
@@ -245,6 +244,7 @@ int validate_fp(char* filename, uint32_t ngram)
                 for (i=0; i<st.st_size; i+=sizeof(uint32_t)) {
                     x = (uint32_t*)(content+i);
                     if (*x == ngram) {
+                        DBG("ngram %04x found at offset %08x\n", ngram, (uint32_t)i);
                         ret = 1;
                         break;
                     }
@@ -534,7 +534,7 @@ uint8_t query_index(blind_t *blind, uint32_t ngram)
                 printf("ngram %04x found in filename %s\n", ngram,
                                                        blind->toc[i].filename);
             }else{
-                printf("False positive for ngram %04x for filename %s\n", ngram,
+                DBG("False positive for ngram %04x for filename %s\n", ngram,
                        blind->toc[i].filename);
             }
         }
