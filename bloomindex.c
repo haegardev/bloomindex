@@ -29,6 +29,7 @@
 #include <sys/mman.h>
 #include <math.h>
 #include <getopt.h>
+#include <arpa/inet.h>
 #include "hashes.h"
 
 #ifdef DEBUG
@@ -630,7 +631,8 @@ int main(int argc, char* argv[])
                     value = 0;
                     sscanf(query,"%08x",&value);
                     printf("Query ngram %04x\n", value);
-                    query_index(blind, value);
+                    printf("Query ngram (big endian) %04x\n", htonl(value));
+                    query_index(blind, htonl(value));
                     //TODO error handling
                     return EXIT_SUCCESS;
                 } else{
