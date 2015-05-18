@@ -436,19 +436,26 @@ blind_t* load_index(char* indexfile)
     fd = open(indexfile, O_RDONLY);
     if (fd != -1) {
         if (stat(indexfile,&st) != -1) {
+                DBG("Size of mmap file %ld\n", st.st_size);
                 blind->rawmem = mmap(NULL,st.st_size, PROT_READ, MAP_PRIVATE,
                                      fd,0);
+                DBG("Memory mapped file is at address %p\n", blind->rawmem);
                 if (blind->rawmem != MAP_FAILED){
                     if (check_header(blind)) {
                         ptr = blind->rawmem;
                         // Copy all the existing fields serialized in the file
                         shadow = (blind_t*)blind->rawmem;
+                        DBG("Old serialized data is at address %p\n", shadow);
                         memcpy(blind, shadow, sizeof(blind_t));
+                        DBG("Putting back old pointer for the raw memory %p\n",
+                            ptr);
                         blind->rawmem = ptr;
                         //TODO Scrub old dynamic fields
                         DBG("Identified %d samples\n", shadow->tocpos);
                         blind->data = blind->rawmem + sizeof(blind_t);
+                        DBG("Data is at address %p\n", blind->data);
                         blind->fd = fd;
+                        DBG("Fd is %d\n", blind->fd);
                         return blind;
                     }
                 }else {
