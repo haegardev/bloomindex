@@ -435,14 +435,14 @@ blind_t* load_index(char* indexfile)
     DBG("New blind object created at address %p\n",blind);
     fd = open(indexfile, O_RDONLY);
     if (fd != -1) {
-        blind->rawmem = mmap(NULL,st.st_size, PROT_READ, MAP_PRIVATE,fd,0);
-        shadow = (blind_t*)blind->rawmem;
         if (stat(indexfile,&st) != -1) {
                 blind->rawmem = mmap(NULL,st.st_size, PROT_READ, MAP_PRIVATE,
                                      fd,0);
                 if (blind->rawmem != MAP_FAILED){
                     if (check_header(blind)) {
                         ptr = blind->rawmem;
+                        // Copy all the existing fields serialized in the file
+                        shadow = (blind_t*)blind->rawmem;
                         memcpy(blind, shadow, sizeof(blind_t));
                         blind->rawmem = ptr;
                         //TODO Scrub old dynamic fields
