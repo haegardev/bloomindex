@@ -432,6 +432,7 @@ blind_t* load_index(char* indexfile)
     if (!blind)
         return NULL;
 
+    DBG("New blind object created at address %p\n",blind);
     fd = open(indexfile, O_RDONLY);
     if (fd != -1) {
         blind->rawmem = mmap(NULL,st.st_size, PROT_READ, MAP_PRIVATE,fd,0);
