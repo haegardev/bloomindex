@@ -638,8 +638,8 @@ int main(int argc, char* argv[])
                 if ((l>0) && (l<=8)) {
                     value = 0;
                     sscanf(query,"%08x",&value);
-                    printf("Query ngram %04x\n", value);
-                    printf("Query ngram (big endian) %04x\n", htonl(value));
+                    printf("Query ngram (network order)%04x\n", value);
+                    printf("Query ngram (host order) %04x\n", ntohl(value));
                     query_index(blind, htonl(value));
                     //TODO error handling
                     return EXIT_SUCCESS;
