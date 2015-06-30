@@ -8,3 +8,6 @@ crc32.o:	crc32.c
 	gcc -Wall -ggdb -c crc32.c
 murmur32.o:	murmur32.c
 	gcc -Wall -ggdb -c murmur32.c
+clean:
+	-rm bloomindex
+	-rm *.o
